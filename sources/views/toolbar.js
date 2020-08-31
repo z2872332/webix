@@ -44,7 +44,7 @@ const api = {
 					});
 			}
 
-			if (view.setValues || view._fill_data) return false;
+			if (view.setValues) return false;
 		});
 		var old = this._values;
 		this.setDirty(false);
