@@ -243,23 +243,31 @@ const api = {
 		this.files.updateItem(id);
 	},
 	setValue:function(value){
-		if (typeof value == "string" && value)
-			value = { value:value, status:"server" };
-
+		// 重写setValue方法，支持XMIS文件服务。	add by cloud.zhong
+		if(typeof value == "string" && value) {
+			var list = JSON.parse(value);
+			value = [];
+			for(var i = 0; i < list.length; i++) {
+				var item = list[i];
+				value.push({name: item.original_name, status: "server", sizetext: this._format_size(item.size), data: item});
+			}
+		}
+	
 		this.files.clearAll();
 		if (value)
 			this.files.parse(value);
-
+	
 		this.callEvent("onChange", []);
 	},
 	getValue:function(){
+		// 重写getValue方法，支持XMIS文件服务。	add by cloud.zhong
 		var data = [];
 		this.files.data.each(function(obj){
 			if (obj.status == "server")
-				data.push(obj.value||obj.name);
+				data.push(obj.data);
 		});
-
-		return data.join(",");
+		
+		return JSON.stringify(data);
 	}
 
 };

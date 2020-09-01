@@ -1731,6 +1731,7 @@
 	} //remove css class from the node
 
 	function removeCss(node, name) {
+	  //防止node.className不存时报错	add by cloud.zhong
 	  node.className = (node.className || "").replace(RegExp(" " + name, "g"), "");
 	}
 	function getTextSize(text, css, basewidth) {
@@ -30403,20 +30404,33 @@
 	    this.files.updateItem(id);
 	  },
 	  setValue: function (value) {
-	    if (typeof value == "string" && value) value = {
-	      value: value,
-	      status: "server"
-	    };
+	    // 重写setValue方法，支持XMIS文件服务。	add by cloud.zhong
+	    if (typeof value == "string" && value) {
+	      var list = JSON.parse(value);
+	      value = [];
+
+	      for (var i = 0; i < list.length; i++) {
+	        var item = list[i];
+	        value.push({
+	          name: item.original_name,
+	          status: "server",
+	          sizetext: this._format_size(item.size),
+	          data: item
+	        });
+	      }
+	    }
+
 	    this.files.clearAll();
 	    if (value) this.files.parse(value);
 	    this.callEvent("onChange", []);
 	  },
 	  getValue: function () {
+	    // 重写getValue方法，支持XMIS文件服务。	add by cloud.zhong
 	    var data = [];
 	    this.files.data.each(function (obj) {
-	      if (obj.status == "server") data.push(obj.value || obj.name);
+	      if (obj.status == "server") data.push(obj.data);
 	    });
-	    return data.join(",");
+	    return JSON.stringify(data);
 	  }
 	};
 	var view$$ = exports.protoUI(api$$, button$1.view);
@@ -30748,7 +30762,8 @@
 	    if (input.getInputNode) {
 	      node = input.getInputNode();
 	      node.webix_master_id = input._settings.id;
-	    } else node = toNode(input);
+	    } else node = toNode(input); // keydown改为keyup，用来支持中文搜索。	add by cloud.zhong
+
 
 	    _event(node, "keyup", function (e) {
 	      if ((node != document.body || this.isVisible()) && (input.config ? !input.config.readonly : !node.getAttribute("readonly"))) this._suggestions(e);
@@ -30777,6 +30792,7 @@
 	    this._last_input_target = trg;
 	    this._settings.master = trg.webix_master_id;
 	    var code = e.keyCode; //shift and ctrl
+	    //remove shift 用来支持中文搜索	add by cloud.zhong
 
 	    if (code == 17) return; // tab - hide popup and do nothing
 
@@ -30797,6 +30813,7 @@
 	      //focus moved to the different control, suggest is not necessary
 	      if (!this._non_ui_mode && UIManager.getFocus() != $$(this._settings.master)) return;
 	      this._resolve_popup = true; //spreadsheet use contentEditable div for cell highlighting
+	      // 中文输入法，处于输入中时，不需要搜索。	add by cloud.zhong
 
 	      var val = ((contentEditable ? trg.innerText : trg.value) || "").trim();
 	      var lastValue = trg.getAttribute("lastValue") || ""; // 搜索值无改时不搜索
