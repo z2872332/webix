@@ -1731,7 +1731,7 @@
 	} //remove css class from the node
 
 	function removeCss(node, name) {
-	  node.className = node.className.replace(RegExp(" " + name, "g"), "");
+	  node.className = (node.className || "").replace(RegExp(" " + name, "g"), "");
 	}
 	function getTextSize(text, css, basewidth) {
 	  var d = create("DIV", {
@@ -10778,7 +10778,29 @@
 	      "class": "webix_dt_editor"
 	    }, "<input type='password' aria-label='" + getLabel(this.config) + "'>");
 	  }
-	}, editors.text);
+	}, editors.text); // 多选标签 add by cloud.zhong
+
+	editors.multicombo = exports.extend({
+	  popupType: "multicombo",
+	  setValue: function (value) {
+	    var suggest = this.config.collection || this.config.options;
+	    if (suggest) this.getPopup().getChildViews()[0].getList().data.importData(suggest);
+	    this.getPopup().show(this.node);
+	    this.getPopup().getChildViews()[0].setValue(value);
+	  },
+	  getValue: function () {
+	    return this.getInputNode().getValue() || "";
+	  },
+	  getInputNode: function () {
+	    return this.getPopup().getChildViews()[0];
+	  },
+	  // 第一次创建popup时调用
+	  popupInit: function (popup) {
+	    popup.getChildViews()[0].getList().attachEvent("onItemClick", function (id, e) {
+	      preventEvent(e);
+	    });
+	  }
+	}, editors.popup);
 	editors.$popup = {
 	  text: {
 	    view: "popup",
@@ -10816,6 +10838,20 @@
 	    view: "multisuggest",
 	    suggest: {
 	      button: true
+	    }
+	  },
+	  // 多选标签 add by cloud.zhong
+	  multicombo: {
+	    view: "popup",
+	    width: 500,
+	    height: 150,
+	    body: {
+	      view: "multicombo",
+	      options: [],
+	      suggest: {
+	        selectAll: true,
+	        data: []
+	      }
 	    }
 	  }
 	};
@@ -30526,7 +30562,7 @@
 	      navigation: true
 	    },
 	    filter: function (item, value) {
-	      if (item.value.toString().toLowerCase().indexOf(value.toLowerCase()) === 0) return true;
+	      if (item.value.toString().toLowerCase().indexOf(value.toLowerCase().trim()) > -1) return true;
 	      return false;
 	    }
 	  },
@@ -30742,7 +30778,7 @@
 	    this._settings.master = trg.webix_master_id;
 	    var code = e.keyCode; //shift and ctrl
 
-	    if (code == 16 || code == 17) return; // tab - hide popup and do nothing
+	    if (code == 17) return; // tab - hide popup and do nothing
 
 	    if (code == 9) return this._tab_key(e, list); // escape - hide popup
 
@@ -30762,7 +30798,11 @@
 	      if (!this._non_ui_mode && UIManager.getFocus() != $$(this._settings.master)) return;
 	      this._resolve_popup = true; //spreadsheet use contentEditable div for cell highlighting
 
-	      var val = contentEditable ? trg.innerText : trg.value;
+	      var val = ((contentEditable ? trg.innerText : trg.value) || "").trim();
+	      var lastValue = trg.getAttribute("lastValue") || ""; // 搜索值无改时不搜索
+
+	      if (val === lastValue) return;
+	      trg.setAttribute("lastValue", val);
 	      if (this._before_filtering) this._before_filtering(); // used to prevent showing popup when it was initialized
 
 	      if (list.config.dataFeed) list.filter("value", val);else if (list.filter) {

@@ -25,7 +25,7 @@ const api = {
 			navigation:true
 		},
 		filter:function(item,value){
-			if (item.value.toString().toLowerCase().indexOf(value.toLowerCase())===0) return true;
+			if (item.value.toString().toLowerCase().indexOf(value.toLowerCase().trim()) > -1) return true;
 			return false;
 		}
 	},
@@ -242,7 +242,8 @@ const api = {
 		} else
 			node = toNode(input);
 
-		_event(node,"keydown",function(e){
+		// keydown改为keyup，用来支持中文搜索。	add by cloud.zhong
+		_event(node,"keyup",function(e){
 			if ((node != document.body || this.isVisible()) && (input.config ? (!input.config.readonly) : (!node.getAttribute("readonly"))))
 				this._suggestions(e);
 		}, {bind:this});
@@ -276,7 +277,8 @@ const api = {
 
 		var code = e.keyCode;
 		//shift and ctrl
-		if (code == 16 || code == 17) return;
+		//remove shift 用来支持中文搜索	add by cloud.zhong
+		if (code == 17) return;
 
 		// tab - hide popup and do nothing
 		if (code == 9)
@@ -305,8 +307,14 @@ const api = {
 					UIManager.getFocus() != $$(this._settings.master)) return;
 
 			this._resolve_popup = true;
+			
 			//spreadsheet use contentEditable div for cell highlighting
-			var val = contentEditable ? trg.innerText : trg.value;
+			// 中文输入法，处于输入中时，不需要搜索。	add by cloud.zhong
+			var val = ((contentEditable ? trg.innerText : trg.value) || "").trim();
+			var lastValue = trg.getAttribute("lastValue") || "";
+			// 搜索值无改时不搜索
+			if(val === lastValue) return;
+			trg.setAttribute("lastValue", val);
 
 			if (this._before_filtering)
 				this._before_filtering();

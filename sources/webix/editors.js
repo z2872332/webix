@@ -1,6 +1,6 @@
 
 
-import {create} from "../webix/html";
+import {create, preventEvent} from "../webix/html";
 import {isArray, isUndefined, copy, toNode, bind, delay, extend} from "../webix/helpers";
 import {ui, $$} from "../ui/core";
 import i18n from "../webix/i18n";
@@ -407,6 +407,29 @@ editors.password = extend({
 	}
 }, editors.text);
 
+// 多选标签 add by cloud.zhong
+editors.multicombo = extend({
+	popupType: "multicombo",
+	setValue: function (value) {
+		var suggest = this.config.collection || this.config.options;
+		if (suggest) this.getPopup().getChildViews()[0].getList().data.importData(suggest);
+		this.getPopup().show(this.node);
+		this.getPopup().getChildViews()[0].setValue(value);
+	},
+	getValue: function () {
+		return this.getInputNode().getValue() || "";
+	},
+	getInputNode:function(){
+		return this.getPopup().getChildViews()[0];
+	},
+	// 第一次创建popup时调用
+	popupInit: function (popup) {
+		popup.getChildViews()[0].getList().attachEvent("onItemClick", function (id, e) {
+			preventEvent(e);
+		});
+	}
+}, editors.popup);
+
 editors.$popup = {
 	text:{
 		view:"popup", width:250, height:150,
@@ -428,6 +451,17 @@ editors.$popup = {
 		view:"multisuggest",
 		suggest:{
 			button:true
+		}
+	},
+	// 多选标签 add by cloud.zhong
+	multicombo: {
+		view: "popup",
+		width: 500,
+		height: 150,
+		body: {
+			view: "multicombo",
+			options: [],
+			suggest: {selectAll: true, data: []}
 		}
 	}
 };

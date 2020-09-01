@@ -213,7 +213,8 @@ export function addCss(node,name,check){
 
 //remove css class from the node
 export function removeCss(node,name){
-	node.className=node.className.replace(RegExp(" "+name,"g"),"");
+	//防止node.className不存时报错	add by cloud.zhong
+	node.className=(node.className || "").replace(RegExp(" "+name,"g"),"");
 }
 
 export function getTextSize(text, css, basewidth){
