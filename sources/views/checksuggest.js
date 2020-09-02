@@ -38,7 +38,7 @@ const api = {
 							this.setValue(popup._is_all_selected()*1);
 						}
 					}},
-				{ view:"list",  css:"webix_multilist", borderless:true, autoheight:true, yCount:5,
+				{ view:"list",  css:"webix_multilist", borderless:true, autoheight:true, yCount:10,
 					type:"checklist",
 					on:{
 						onItemClick: function(id, e){

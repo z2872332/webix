@@ -17,7 +17,7 @@ const api = {
 		},
 		body:{
 			rows:[
-				{ view:"list", type:"multilist", borderless:true,  autoheight:true, yCount:5, multiselect:"touch", select:true,
+				{ view:"list", type:"multilist", borderless:true,  autoheight:true, yCount:10, multiselect:"touch", select:true,
 					on:{
 						onItemClick: function(id){
 							var popup = this.getParentView().getParentView();

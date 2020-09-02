@@ -112,7 +112,7 @@ const api = {
 	defaults:{
 		popupWidth: 200,
 		popupTemplate: "#value#",
-		yCount: 7,
+		yCount: 10,
 		moreTemplate: "<span class=\"webix_icon wxi-dots\"></span>",
 		template:function(obj,common) {
 			common._check_options(obj.options);

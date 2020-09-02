@@ -10630,7 +10630,8 @@
 	          if (code == 40) dir = "down";
 	          list.moveSelection(dir);
 	        } // shift+enter support for 'popup' editor
-	        else if (code === 13 && (e.target.nodeName !== "TEXTAREA" || !e.shiftKey)) callEvent("onEditEnd", []);
+	        // popup中，按enter换行，shift+enter或ctrl+enter完成录入。	add by cloud.zhong
+	        else if (code === 13 && (e.target.nodeName !== "TEXTAREA" || e.shiftKey || e.ctrlKey)) callEvent("onEditEnd", []);
 	      }, this));
 	    },
 	    popupInit: function () {},
@@ -10801,6 +10802,22 @@
 	      preventEvent(e);
 	    });
 	  }
+	}, editors.popup); // 文件上传 add by cloud.zhong
+
+	editors.uploader = exports.extend({
+	  popupType: "uploader",
+	  setValue: function (value) {
+	    this.getPopup().show(this.node);
+	    this.getInputNode().setValue(value);
+	  },
+	  getValue: function () {
+	    return this.getInputNode().getValue() || "";
+	  },
+	  getInputNode: function () {
+	    return this.getPopup().queryView({
+	      view: "uploader"
+	    });
+	  }
 	}, editors.popup);
 	editors.$popup = {
 	  text: {
@@ -10853,6 +10870,25 @@
 	        selectAll: true,
 	        data: []
 	      }
+	    }
+	  },
+	  // 文件上传 add by cloud.zhong
+	  uploader: {
+	    view: "popup",
+	    width: 500,
+	    height: 150,
+	    body: {
+	      rows: [{
+	        view: "uploader",
+	        link: "datatable_uploader_list"
+	      }, {
+	        view: "list",
+	        id: "datatable_uploader_list",
+	        type: "uploader",
+	        height: 0,
+	        autoheight: true,
+	        borderless: true
+	      }]
 	    }
 	  }
 	};
@@ -29854,7 +29890,7 @@
 	  defaults: {
 	    popupWidth: 200,
 	    popupTemplate: "#value#",
-	    yCount: 7,
+	    yCount: 10,
 	    moreTemplate: "<span class=\"webix_icon wxi-dots\"></span>",
 	    template: function (obj, common) {
 	      common._check_options(obj.options);
@@ -31005,7 +31041,7 @@
 	        type: "multilist",
 	        borderless: true,
 	        autoheight: true,
-	        yCount: 5,
+	        yCount: 10,
 	        multiselect: "touch",
 	        select: true,
 	        on: {
@@ -31172,7 +31208,7 @@
 	        css: "webix_multilist",
 	        borderless: true,
 	        autoheight: true,
-	        yCount: 5,
+	        yCount: 10,
 	        type: "checklist",
 	        on: {
 	          onItemClick: function (id, e) {
