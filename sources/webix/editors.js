@@ -430,6 +430,21 @@ editors.multicombo = extend({
 	}
 }, editors.popup);
 
+// 文件上传 add by cloud.zhong
+editors.uploader = extend({
+	popupType: "uploader",
+	setValue: function (value) {
+		this.getPopup().show(this.node);
+		this.getInputNode().setValue(value);
+	},
+	getValue: function () {
+		return this.getInputNode().getValue() || "";
+	},
+	getInputNode:function(){
+		return this.getPopup().queryView({view: "uploader"});
+	}
+}, editors.popup);
+
 editors.$popup = {
 	text:{
 		view:"popup", width:250, height:150,
@@ -462,6 +477,18 @@ editors.$popup = {
 			view: "multicombo",
 			options: [],
 			suggest: {selectAll: true, data: []}
+		}
+	},
+	// 文件上传 add by cloud.zhong
+	uploader: {
+		view: "popup",
+		width: 500,
+		height: 150,
+		body: {
+			rows: [
+				{view: "uploader", link: "datatable_uploader_list"},
+				{view: "list", id: "datatable_uploader_list", type:"uploader", height: 0, autoheight: true, borderless: true}
+			]
 		}
 	}
 };
