@@ -267,7 +267,7 @@ const api = {
 				data.push(obj.data);
 		});
 		
-		return JSON.stringify(data);
+		return data.length > 0 ? JSON.stringify(data) : "";
 	}
 
 };

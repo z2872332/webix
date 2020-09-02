@@ -30430,7 +30430,7 @@
 	    this.files.data.each(function (obj) {
 	      if (obj.status == "server") data.push(obj.data);
 	    });
-	    return JSON.stringify(data);
+	    return data.length > 0 ? JSON.stringify(data) : "";
 	  }
 	};
 	var view$$ = exports.protoUI(api$$, button$1.view);
