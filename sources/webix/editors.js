@@ -249,7 +249,7 @@ const editors = {
 				} 
 				// shift+enter support for 'popup' editor
 				// popup中，按enter换行，shift+enter或ctrl+enter完成录入。	add by cloud.zhong
-				else if(code === 13 && ( e.target.nodeName !=="TEXTAREA" || !e.shiftKey))
+				else if(code === 13 && ( e.target.nodeName !== "TEXTAREA" || e.shiftKey || e.ctrlKey))
 					callEvent("onEditEnd", []);
 			
 			}, this));
