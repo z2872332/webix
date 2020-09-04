@@ -61,9 +61,10 @@ const api = {
 		if (this._disabled) return;
 
 		this._visible = true;
-		if (typeof data === "string")
-			this._alt_render(data);
-		else {
+		if (typeof data === "string") {
+			// 换行符替换为<br/>	add by cloud.zhong
+			this._alt_render(data.replace(/\n/g, "<br/>"));
+		}else {
 			this.data = extend({}, data);
 			this.render();
 		}
