@@ -375,8 +375,14 @@ editors.combo = extend({
 		if (this.config.suggest){
 			var suggest = $$(this.config.suggest),
 				list = suggest.getList();
-			if (value || (list.getSelectedId && list.getSelectedId()))	
+			if (value || (list.getSelectedId && list.getSelectedId())) {
+				// text为空字符串且，且value为webix自动生成13数字时，返回空字符串。
+				if(value === "" && /^\d{13,}$/.test(suggest.getSuggestion(value))) {
+					return "";
+				}
 				value = suggest.getSuggestion(value);
+			}
+				
 		}
 	
 		return value;
@@ -499,6 +505,7 @@ editors.$popup = {
 		width: 500,
 		height: 150,
 		body: {
+			css: "editors_multicombo",
 			view: "multicombo",
 			options: [],
 			suggest: {selectAll: true, data: []}
@@ -510,6 +517,7 @@ editors.$popup = {
 		width: 500,
 		height: 150,
 		body: {
+			css: "editors_uploader",
 			rows: [
 				{view: "uploader", link: "datatable_uploader_list"},
 				{view: "list", id: "datatable_uploader_list", type:"uploader", height: 0, autoheight: true, borderless: true}

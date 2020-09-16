@@ -124,6 +124,10 @@ const api = {
 		this._settings.text = text;
 	},
 	getValue:function(){
+		// text为空字符串且，且value为webix自动生成13数字时，返回空字符串。
+		if(this._settings.text === "" && /^\d{13,}$/.test(this._settings.value)) {
+			return "";
+		}
 		return this._settings.value||"";
 	},
 	_ignoreLabelClick:function(ev){
