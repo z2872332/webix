@@ -258,7 +258,17 @@ const editors = {
 		popupInit:function(){},
 		popupType:"text",
 		render	:function(){ return {}; },
-		$inline:true
+		$inline:true,
+
+		// 定义disable方法后，在非编辑模式下也可以显示popup。
+		disable: function() {
+			this.getInputNode().disable();
+		},
+		
+		// 与disable成对出现
+		enable: function() {
+			this.getInputNode().enable();
+		}
 	}
 };
 
@@ -428,6 +438,7 @@ editors.multicombo = extend({
 		popup.getChildViews()[0].getList().attachEvent("onItemClick", function (id, e) {
 			preventEvent(e);
 		});
+		popup.srcCell = this;
 	}
 }, editors.popup);
 
@@ -443,6 +454,19 @@ editors.uploader = extend({
 	},
 	getInputNode:function(){
 		return this.getPopup().queryView({view: "uploader"});
+	},
+	// 第一次创建popup时调用
+	popupInit: function (popup) {
+		popup.srcCell = this;
+	},
+	// 定义disable方法后，在非编辑模式下也可以显示popup。
+	disable: function() {
+		this.getInputNode().disable();
+		this.getPopup().getNode().classList.add("disable");
+	},
+	enable: function() {
+		this.getInputNode().enable();
+		this.getPopup().getNode().classList.remove("disable");
 	}
 }, editors.popup);
 

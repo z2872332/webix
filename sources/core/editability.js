@@ -141,12 +141,18 @@ const EditAbility ={
 			first.focus();
 	},
 	edit:function(id, preserve, show){
-		if (!this._settings.editable || !this.callEvent("onBeforeEditStart", [id])) return;
+		if (!this.callEvent("onBeforeEditStart", [id])) return;
 		if (this._settings.form)
 			return this._show_editor_form(id);
 
 		var editor = this._get_editor_type(id);
 		if (editor){
+			// 如editor无disable方法，则在不可编辑模式时，不会显示popup。
+			var editable = this._settings.editable;
+			if(!editors[editor].disable && !editable) {
+				return;
+			}
+
 			if (this.getEditor(id)) return;
 			if (!preserve) this.editStop();
 
@@ -155,7 +161,7 @@ const EditAbility ={
 			var type = extend({}, editors[editor]);
 
 			var node = this._init_editor(id, type, show);
-			if (type.config.liveEdit)
+			if (type.config.liveEdit && editable)
 				this._live_edits_handler = this.attachEvent("onKeyPress", this._handle_live_edits);
 
 			var area = type.getPopup?type.getPopup(node)._viewobj:node;
@@ -164,9 +170,15 @@ const EditAbility ={
 				_event(area, "click", this._reset_active_editor);
 			if (node)
 				_event(node, "change", this._on_editor_change, { bind:{ view:this, id:id }});
-			if (show !== false)
-				type.focus();
-
+			if(this._settings.editable) {
+				if(type.enable) {
+					type.enable();
+				}
+				if (show !== false) type.focus();
+			}else {
+				type.disable();
+			}
+			
 			if (this.$fixEditor)
 				this.$fixEditor(type);
 

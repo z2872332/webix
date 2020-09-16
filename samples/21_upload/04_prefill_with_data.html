@@ -19,7 +19,9 @@
 					},
 					{
 					 	view:"list",  id:"mylist", type:"uploader",
-						autoheight:true, borderless:true
+						autoheight:true, borderless:true, 
+						download: function() {alert("download")},
+						preview: function() {alert("preview")}
 					},
 					{ view: "button", label: "Get value", click: function() {
 						var text = this.getParentView().getValues();

@@ -29,17 +29,27 @@ type(list.view, {
 		if (obj.status == "transfer")
 			return "<div style='width:60px; text-align:center; float:right'>"+obj.percent+"%</div>";
 		return "<div class='webix_upload_"+obj.status+"'><span class='" +
-			(obj.status =="error"?"error_icon":"webix_icon wxi-check")+"'></span></div>";
+			(obj.status =="error"?"error_icon":"webix_icon wxi-download")+"'></span></div>";
 	},
 	removeIcon:function(){
 		return "<div class='webix_remove_upload'><span class='cancel_icon'></span></div>";
 	},
 	fileName:function(obj){
-		return "<div style='text-overflow:ellipsis; white-space:nowrap; overflow:hidden; padding-right:8px;'>"+obj.name+"</div>";
+		return "<div class='webix_file_name' style='text-overflow:ellipsis; white-space:nowrap; overflow:hidden; padding-right:8px;'>"+obj.name+"</div>";
 	},
 	on_click:{
 		"webix_remove_upload":function(ev, id){
 			$$(this.config.uploader).files.remove(id);
+		},
+		"webix_file_name":function(ev, id){
+			if(this.config.preview) {
+				this.config.preview($$(this.config.uploader).files.getItem(id), this, ev);
+			}
+		},
+		"webix_upload_server":function(ev, id){
+			if(this.config.download) {
+				this.config.download($$(this.config.uploader).files.getItem(id), this, ev);
+			}
 		}
 	}
 });
