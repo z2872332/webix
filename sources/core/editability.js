@@ -147,9 +147,11 @@ const EditAbility ={
 
 		var editor = this._get_editor_type(id);
 		if (editor){
-			// 如editor无disable方法，则在不可编辑模式时，不会显示popup。
+			// 如editor无disable方法，则在不可编辑模式时，不会显示popup。	add by cloud.zhong
 			var editable = this._settings.editable;
-			if(!editors[editor].disable && !editable) {
+			// 列disable配置，disabled=true时，该列禁止编辑。	add by cloud.zhong
+			var columnDisabled = this.getColumnConfig(id.column).disabled;
+			if(!editors[editor].disable && (columnDisabled || !editable)) {
 				return;
 			}
 
@@ -161,7 +163,7 @@ const EditAbility ={
 			var type = extend({}, editors[editor]);
 
 			var node = this._init_editor(id, type, show);
-			if (type.config.liveEdit && editable)
+			if (type.config.liveEdit && editable && !columnDisabled)
 				this._live_edits_handler = this.attachEvent("onKeyPress", this._handle_live_edits);
 
 			var area = type.getPopup?type.getPopup(node)._viewobj:node;
@@ -170,12 +172,13 @@ const EditAbility ={
 				_event(area, "click", this._reset_active_editor);
 			if (node)
 				_event(node, "change", this._on_editor_change, { bind:{ view:this, id:id }});
-			if(this._settings.editable) {
+			if(this._settings.editable && !columnDisabled) {
 				if(type.enable) {
 					type.enable();
 				}
 				if (show !== false) type.focus();
 			}else {
+				// 禁用输入	add by cloud.zhong
 				type.disable();
 			}
 			
