@@ -364,6 +364,12 @@ editors.combo = extend({
 		if (this.config.suggest){
 			var sobj = $$(this.config.suggest);
 			var data =  this.config.collection || this.config.options;
+
+			// onShowSuggest事件支持
+			if(this.config.xmis && this.config.xmis.onShowSuggest) {
+				data = this.config.xmis.onShowSuggest.apply(this, [data.serialize()]);
+			}
+
 			if (data)
 				sobj.getList().data.importData(data);
 
