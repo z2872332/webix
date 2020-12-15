@@ -274,7 +274,7 @@ const api = {
 		var data = [];
 		this.files.data.each(function(obj){
 			if (obj.status == "server")
-				data.push(obj.data);
+				data.push(webix.isArray(obj.data) ? obj.data[0] : obj.data);
 		});
 		
 		return data.length > 0 ? JSON.stringify(data) : "";
