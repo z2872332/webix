@@ -3,6 +3,7 @@ import {protoUI, $$} from "../ui/core";
 import {extend, delay, uid, toNode, bind} from "../webix/helpers";
 import {_event} from "../webix/htmlevents";
 import {$name} from "../webix/skin";
+import {isArray} from "../webix/helpers";
 
 import base from "../views/view";
 import button from "../views/button";
@@ -274,7 +275,7 @@ const api = {
 		var data = [];
 		this.files.data.each(function(obj){
 			if (obj.status == "server")
-				data.push(webix.isArray(obj.data) ? obj.data[0] : obj.data);
+				data.push(isArray(obj.data) ? obj.data[0] : obj.data);
 		});
 		
 		return data.length > 0 ? JSON.stringify(data) : "";
