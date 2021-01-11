@@ -149,8 +149,13 @@ const EditAbility ={
 		if (editor){
 			// 如editor无disable方法，则在不可编辑模式时，不会显示popup。	add by cloud.zhong
 			var editable = this._settings.editable;
+
 			// 列disable配置，disabled=true时，该列禁止编辑。	add by cloud.zhong
-			var columnDisabled = this.getColumnConfig(id.column).disabled;
+			var columnDisabled = false;
+			if(this.getColumnConfig && this.getColumnConfig(id.column)) {
+				columnDisabled = this.getColumnConfig(id.column).disabled;
+			}
+
 			if(!editors[editor].disable && (columnDisabled || !editable)) {
 				return;
 			}

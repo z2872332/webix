@@ -199,8 +199,9 @@ const editors = {
 				if (typeof popup == "object" && !popup.name){
 					popup.view = popup.view || "suggest";
 					pobj = ui(copy(popup));
-				} else
+				} else {
 					pobj = $$(popup);
+				}	
 
 				//custom popup may be linked already
 				if(!pobj._linked){
@@ -470,6 +471,46 @@ editors.uploader = extend({
 	// 第一次创建popup时调用
 	popupInit: function (popup) {
 		popup.srcCell = this;
+	},
+	// 定义disable方法后，在非编辑模式下也可以显示popup。
+	disable: function() {
+		this.getInputNode().disable();
+		this.getPopup().getNode().classList.add("disable");
+	},
+	enable: function() {
+		this.getInputNode().enable();
+		this.getPopup().getNode().classList.remove("disable");
+	}
+}, editors.popup);
+
+// 属性编辑 add by cloud.zhong
+editors.property = extend({
+	popupType: "property",
+	focus: function(){
+		// 无操作
+	},
+	setValue: function (value) {
+		if(this.config.onBeforeSetPopupValue && this.config.onBeforeSetPopupValue(value, this) === false) {
+			return;
+		}
+		
+		this.getPopup().show(this.node);
+		if(value) {
+			this.getInputNode().setValues(JSON.parse(value));
+		}
+	},
+	getValue: function () {
+		var obj = this.getInputNode().getValues() || {};
+		for (const key in obj) {
+			if(obj[key] === "" || obj[key] === null) {
+				delete obj[key];
+			}
+		}
+		var result = JSON.stringify(obj);
+		return result == "{}" ? null : result;
+	},
+	getInputNode:function(){
+		return this.getPopup().queryView({view: "property"});
 	},
 	// 定义disable方法后，在非编辑模式下也可以显示popup。
 	disable: function() {

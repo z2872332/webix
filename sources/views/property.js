@@ -181,6 +181,8 @@ const api = {
 	},
 	refresh:function(){
 		this.render();
+		// 修复调用refresh后，setValue方法报错问题。	add by cloud.zhong
+		this.elements_setter(this.config.elements);
 	},
 	$setSize:function(x,y){
 		if (base.api.$setSize.call(this, x, y)){
