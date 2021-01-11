@@ -493,20 +493,19 @@ editors.property = extend({
 		if(this.config.onBeforeSetPopupValue && this.config.onBeforeSetPopupValue(value, this) === false) {
 			return;
 		}
-		
+
 		this.getPopup().show(this.node);
 		if(value) {
 			this.getInputNode().setValues(JSON.parse(value));
 		}
 	},
 	getValue: function () {
-		var obj = this.getInputNode().getValues() || {};
-		for (const key in obj) {
-			if(obj[key] === "" || obj[key] === null) {
-				delete obj[key];
-			}
+		this.getInputNode().editStop();
+		var values = this.getInputNode().getValues() || {};
+		if(this.config.onGetPopupValue && this.config.onGetPopupValue(values, this) === false) {
+			return;
 		}
-		var result = JSON.stringify(obj);
+		var result = JSON.stringify(values);
 		return result == "{}" ? null : result;
 	},
 	getInputNode:function(){
